@@ -28,7 +28,7 @@ except Exception as ex:
     import traceback
 
     traceback.print_exc(ex)
-    logger.error('Set up config.json! See (the link will appear soon)')
+    logger.error('Set up config.json! See https://github.com/aqur1n/SteamUpdates?tab=readme-ov-file#set-up-configjson')
 
 if exists('cache/branches.json'):
     with open('cache/branches.json', encoding = 'utf-8') as f:
