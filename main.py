@@ -32,6 +32,10 @@ except Exception as ex:
     traceback.print_exc(ex)
     logger.error('Set up config.json! See https://github.com/aqur1n/SteamUpdates?tab=readme-ov-file#set-up-configjson')
 
+if not exists('cache'):
+    from os import mkdir
+    mkdir('cache')
+    
 if exists('cache/branches.json'):
     with open('cache/branches.json', encoding = 'utf-8') as f:
         lst_update_bchs = loads(f.read())
