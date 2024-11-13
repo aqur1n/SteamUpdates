@@ -3,7 +3,8 @@
 import logging
 from time import sleep
 from json import loads, dumps
-from os.path import exists
+from os.path import exists, dirname, realpath
+from os import chdir
 
 from discord import SyncWebhook
 
@@ -19,6 +20,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+chdir(dirname(realpath(__file__)))
 try:
     with open('config.json', encoding = 'utf-8') as f:
         cfg = loads(f.read())
