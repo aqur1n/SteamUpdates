@@ -26,6 +26,10 @@ try:
         cfg = loads(f.read())
     APP_ID = cfg['app_id']
     DISCORD_WEBHOOK = SyncWebhook.from_url(cfg['discord_webhook_url'])
+    DISCORD_WEBHOOK_BOT = {
+        "username": cfg.get("webhook_username"),
+        "avatar_url": cfg.get("webhook_avatar_url")
+    }
 except Exception as ex:
     import traceback
 
@@ -54,9 +58,9 @@ def check_update_bch(cdn: CDNClient) -> None:
 
             try:
                 if lst_update_bchs.get(branch, 0) != 0:
-                    DISCORD_WEBHOOK.send(embed = embed_updated_bch(branch, bch_data))
+                    DISCORD_WEBHOOK.send(**DISCORD_WEBHOOK_BOT, embed = embed_updated_bch(branch, bch_data))
                 else:
-                    DISCORD_WEBHOOK.send(embed = embed_created_bch(branch, bch_data))
+                    DISCORD_WEBHOOK.send(**DISCORD_WEBHOOK_BOT, embed = embed_created_bch(branch, bch_data))
             except Exception as ex:
                 logger.error(f'There was an error when sending data to the webhook: {ex}')
 
