@@ -34,4 +34,5 @@ def embed_updated_bch(raw_name: str, bch_data: dict) -> Embed:
 def embed_created_bch(raw_name: str, bch_data: dict) -> Embed: 
     embed = embed_updated_bch(raw_name, bch_data)
     embed.title = f'Branch {format_bch_name(raw_name, bch_data)} has been created/updated'
+    embed.colour = COLOUR_CREATED_BCH
     return embed
