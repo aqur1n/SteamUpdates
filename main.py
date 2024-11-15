@@ -61,10 +61,10 @@ def check_update_bch(cdn: CDNClient) -> None:
                     DISCORD_WEBHOOK.send(**DISCORD_WEBHOOK_BOT, embed = embed_updated_bch(branch, bch_data))
                 else:
                     DISCORD_WEBHOOK.send(**DISCORD_WEBHOOK_BOT, embed = embed_created_bch(branch, bch_data))
+
+                lst_update_bchs[branch] = int(bch_data['timeupdated'])
             except Exception as ex:
                 logger.error(f'There was an error when sending data to the webhook: {ex}')
-
-            lst_update_bchs[branch] = int(bch_data['timeupdated'])
 
     with open('cache/branches.json', mode = 'w', encoding = 'utf-8') as f:
         f.write(dumps(lst_update_bchs))
