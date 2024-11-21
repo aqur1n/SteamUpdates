@@ -86,7 +86,8 @@ if __name__ == '__main__':
             check_update_bch(client)
         except Timeout:
             logger.warning('The time has expired when receiving the data, a second attempt...')
+            sleep(600)
         except Exception as ex:
             print_exc(ex)
         else:
-            sleep(120)
+            sleep(300)
