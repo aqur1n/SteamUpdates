@@ -8,8 +8,7 @@ from os import chdir
 
 from discord import SyncWebhook
 
-from steam.client.cdn import CDNClient
-from steam.client import SteamClient
+from steam.client import SteamClient, EResult
 
 from modules.embeds import embed_updated_bch, embed_created_bch
 
@@ -46,8 +45,8 @@ if exists('cache/branches.json'):
 else:
     lst_update_bchs = {}
 
-def check_update_bch(cdn: CDNClient) -> None:
-    depot_info = cdn.get_app_depot_info(APP_ID)
+def check_update_bch(client: SteamClient) -> None:
+    depot_info = client.get_product_info([APP_ID])['apps'][APP_ID]['depots']
 
     for branch in depot_info['branches']:
         bch_data = depot_info['branches'][branch]
@@ -69,16 +68,19 @@ def check_update_bch(cdn: CDNClient) -> None:
     with open('cache/branches.json', mode = 'w', encoding = 'utf-8') as f:
         f.write(dumps(lst_update_bchs))
 
+def login(client: SteamClient) -> None:
+    l = client.anonymous_login()
+    if l == EResult.OK:
+        logger.info('Logged in via anonymous. Getting started...')
+    else:
+        logger.error(f'Connection error to anonymous, response: {l}')
+        quit(1)
 
 if __name__ == '__main__':
-    steam = SteamClient()
-    steam.anonymous_login()
-
-    logger.info('Logged in via anonymous. Getting started...')
-
-    cdn = CDNClient(steam)
-
+    client = SteamClient()
+    login(client)
+        
     while True:
-        check_update_bch(cdn)
+        check_update_bch(client)
 
         sleep(120)
