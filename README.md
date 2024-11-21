@@ -17,6 +17,8 @@ python3.9 main.py
 ```
 {
     "app_id": STEAM_APP_ID,
-    "discord_webhook_url": "DISCORD_WEBHOOK_URL"
+    "discord_webhook_url": "DISCORD_WEBHOOK_URL",
+    "webhook_username": "NAME_FOR_YOUR_WEBHOOK (OPTIONAL)",
+    "webhook_avatar_url": "LINK_TO__AVATAR_FOR_YOUR_WEBHOOK (OPTIONAL)"
 }
 ```
