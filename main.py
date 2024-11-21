@@ -3,12 +3,14 @@
 import logging
 from time import sleep
 from json import loads, dumps
+from traceback import print_exc
 from os.path import exists, dirname, realpath
 from os import chdir
 
 from discord import SyncWebhook
 
 from steam.client import SteamClient, EResult
+from gevent import Timeout
 
 from modules.embeds import embed_updated_bch, embed_created_bch
 
@@ -30,9 +32,7 @@ try:
         "avatar_url": cfg.get("webhook_avatar_url")
     }
 except Exception as ex:
-    import traceback
-
-    traceback.print_exc(ex)
+    print_exc(ex)
     logger.error('Set up config.json! See https://github.com/aqur1n/SteamUpdates?tab=readme-ov-file#set-up-configjson')
 
 if not exists('cache'):
@@ -61,6 +61,7 @@ def check_update_bch(client: SteamClient) -> None:
                 else:
                     DISCORD_WEBHOOK.send(**DISCORD_WEBHOOK_BOT, embed = embed_created_bch(branch, bch_data))
 
+                logger.info('The data was sent successfully')
                 lst_update_bchs[branch] = int(bch_data['timeupdated'])
             except Exception as ex:
                 logger.error(f'There was an error when sending data to the webhook: {ex}')
@@ -81,6 +82,11 @@ if __name__ == '__main__':
     login(client)
         
     while True:
-        check_update_bch(client)
-
-        sleep(120)
+        try:
+            check_update_bch(client)
+        except Timeout:
+            logger.warning('The time has expired when receiving the data, a second attempt...')
+        except Exception as ex:
+            print_exc(ex)
+        else:
+            sleep(120)
