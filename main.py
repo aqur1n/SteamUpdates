@@ -46,7 +46,7 @@ else:
     lst_update_bchs = {}
 
 def check_update_bch(client: SteamClient) -> None:
-    depot_info = client.get_product_info([APP_ID])['apps'][APP_ID]['depots']
+    depot_info = client.get_product_info([APP_ID], timeout = 60)['apps'][APP_ID]['depots']
 
     for branch in depot_info['branches']:
         bch_data = depot_info['branches'][branch]
