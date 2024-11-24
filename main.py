@@ -47,6 +47,7 @@ else:
 
 def check_update_bch(client: SteamClient) -> None:
     depot_info = client.get_product_info([APP_ID], timeout = 60)['apps'][APP_ID]['depots']
+    logger.debug(f"Data of the branches of the application {APP_ID} has been received.")
 
     for branch in depot_info['branches']:
         bch_data = depot_info['branches'][branch]
@@ -70,6 +71,9 @@ def check_update_bch(client: SteamClient) -> None:
         f.write(dumps(lst_update_bchs))
 
 def login(client: SteamClient) -> None:
+    if client.logged_on:
+        return
+    
     l = client.anonymous_login()
     if l == EResult.OK:
         logger.info('Logged in via anonymous. Getting started...')
@@ -79,14 +83,14 @@ def login(client: SteamClient) -> None:
 
 if __name__ == '__main__':
     client = SteamClient()
-    login(client)
-        
     while True:
         try:
+            login(client)
+
+            logger.debug("Checking for branch updates...")
             check_update_bch(client)
         except Timeout:
             logger.warning('The time has expired when receiving the data, a second attempt...')
-            sleep(600)
         except Exception as ex:
             print_exc(ex)
         else:
