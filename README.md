@@ -14,7 +14,7 @@ python3.9 main.py
 ## Set up config.json
 1. Create a file in the directory with `main.py` with the name `config.json`
 2. Copy the configuration example from below and customize it for yourself
-```
+```json
 {
     "app_id": 387990,
     "branch_pings": {
