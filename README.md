@@ -6,7 +6,7 @@ Get updated branches of your game in steam
 ## Installation
 1. Download the latest Python 3.9 security bugfix
 2. Download the latest version or the main branch and unzip the archive to a convenient location
-3. Open the console (Windows), use the commands to navigate to the directory with main.py and run python using the command:
+3. Open the console (Windows) and run python using the command:
 ```
 python3.9 main.py
 ```
@@ -16,9 +16,14 @@ python3.9 main.py
 2. Copy the configuration example from below and customize it for yourself
 ```
 {
-    "app_id": STEAM_APP_ID,
-    "discord_webhook_url": "DISCORD_WEBHOOK_URL",
-    "webhook_username": "NAME_FOR_YOUR_WEBHOOK (OPTIONAL)",
-    "webhook_avatar_url": "LINK_TO__AVATAR_FOR_YOUR_WEBHOOK (OPTIONAL)"
+    "app_id": 387990,
+    "branch_pings": {
+        "public": ["<&000000000000>", "<@!00000000000>"] // etc.
+    },
+    "discord_webhook": {
+        "url": "https://discord.com/api/webhooks/000000000000/aaaaaaaaaaaaaAAAAAAAaaaaaaaaaaaaaaaaaaaaaZ",
+        "username": "Scrap Mechanic TEST",
+        "avatar_url": "https://example.com/image.png"
+    }
 }
 ```
