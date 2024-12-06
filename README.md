@@ -18,7 +18,7 @@ python3.9 main.py
 {
     "app_id": 387990,
     "branch_pings": {
-        "public": ["<&000000000000>", "<@!00000000000>"] // etc.
+        "public": ["<@&000000000000>", "<@!00000000000>"] // etc.
     },
     "discord_webhook": {
         "url": "https://discord.com/api/webhooks/000000000000/aaaaaaaaaaaaaAAAAAAAaaaaaaaaaaaaaaaaaaaaaZ",
