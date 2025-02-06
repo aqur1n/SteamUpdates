@@ -29,7 +29,7 @@ if __name__ == '__main__':
         logger.error('Set up config.json! See https://github.com/aqur1n/SteamUpdates?tab=readme-ov-file#set-up-configjson')
     cfg = Config.from_file('config.json')
 
-    client = SteamUpdater(SteamClient(), cfg)
+    client = SteamUpdater(None, cfg)
     client.branches_cache_from_file()
     while True:
         try:
@@ -40,6 +40,6 @@ if __name__ == '__main__':
         except Timeout:
             logger.warning('The time has expired when receiving the data, a second attempt...')
         except Exception as ex:
-            print_exc(ex)
+            print_exc()
         else:
             sleep(300)

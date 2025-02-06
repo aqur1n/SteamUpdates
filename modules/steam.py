@@ -2,6 +2,7 @@
 from json import dumps, loads
 import logging
 from time import time
+from typing import Optional
 from discord import Colour, Embed, EmbedField
 from steam.client import SteamClient, EResult
 
@@ -33,6 +34,12 @@ def embed_updated_bch(raw_name: str, bch_data: dict) -> Embed:
         ]
     )
 
+def embed_deleted_bch(name: str) -> Embed: 
+    return Embed(
+        colour = Colour.from_rgb(255, 0, 0),
+        title = f'Branch {name} has been deleted'
+    )
+
 def embed_created_bch(raw_name: str, bch_data: dict) -> Embed: 
     embed = embed_updated_bch(raw_name, bch_data)
     embed.title = f'Branch {format_bch_name(raw_name, bch_data)} has been created/updated'
@@ -40,7 +47,7 @@ def embed_created_bch(raw_name: str, bch_data: dict) -> Embed:
     return embed
 
 class SteamUpdater:
-    def __init__(self, client: SteamClient, cfg: Config) -> None:
+    def __init__(self, client: Optional[SteamClient], cfg: Config) -> None:
         self.client = client
         self.cfg = cfg
         self.branches_cache = {}
@@ -54,7 +61,9 @@ class SteamUpdater:
             f.write(dumps(self.branches_cache))
 
     def login(self) -> None:
-        if self.client.logged_on:
+        if self.client is None: 
+            self.client = SteamClient()
+        elif self.client.logged_on:
             return
         
         l = self.client.anonymous_login()
@@ -64,8 +73,15 @@ class SteamUpdater:
             logger.error(f'Connection error to anonymous, response: {l}')
             quit(1)
 
-    def send_embed(self, embed: Embed, content: str = None) -> None:
-        self.cfg.webhook.send(content, **self.cfg.discord_webhook_kwargs, embed = embed)
+    def send_embed(self, embed: Embed, content: str = None) -> bool:
+        try:
+            self.cfg.webhook.send(content, **self.cfg.discord_webhook_kwargs, embed = embed)
+        except Exception as ex:
+            logger.error(f'There was an error when sending data to the webhook: {ex}')
+            return False
+        else:
+            logger.info('The data was sent successfully')
+            return True
 
     def check_branches(self) -> None:
         depot_info = self.client.get_product_info([self.cfg.app_id], timeout = 60)['apps'][self.cfg.app_id]['depots']
@@ -81,21 +97,19 @@ class SteamUpdater:
             if int(bch_data['timeupdated']) > self.branches_cache.get(branch, 0):
                 logger.info(f'Branch {branch} has updates, sending data...')
 
-                try:
-                    if self.branches_cache.get(branch, 0) != 0:
-                        self.send_embed(
-                            embed_updated_bch(branch, bch_data),
-                            content = ', '.join(self.cfg.get_branch_pings(branch))
-                        )
-                    else:
-                        self.send_embed(
-                            embed_created_bch(branch, bch_data),
-                            content = ', '.join(self.cfg.get_branch_pings(branch))
-                        )
-
-                    logger.info('The data was sent successfully')
+                if self.send_embed(
+                        embed_updated_bch(branch, bch_data) if self.branches_cache.get(branch, 0) != 0 else embed_created_bch(branch, bch_data),
+                        content = ', '.join(self.cfg.get_branch_pings(branch))
+                    ):
                     self.branches_cache[branch] = int(bch_data['timeupdated'])
-                except Exception as ex:
-                    logger.error(f'There was an error when sending data to the webhook: {ex}')
+
+        for branch in list(self.branches_cache.keys()): 
+            if depot_info['branches'].get(branch) is None:
+                logger.info(f'Branch {branch} been deleted, sending data...')
+                if self.send_embed(
+                        embed_deleted_bch(branch),
+                        content = ', '.join(self.cfg.get_branch_pings(branch))
+                    ):
+                    del self.branches_cache[branch]
 
         self.branches_cache_to_file()
